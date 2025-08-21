@@ -1,30 +1,58 @@
-<!doctype html>
-<html lang="vi">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>WSB — Whose Smart Brain</title>
-<link rel="stylesheet" href="/static/wsb.css" />
+  <meta charset="UTF-8">
+  <title>WSB AI Chat</title>
+  <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-<header class="top">
-<div class="bar1">
-<div class="left">Thẻ hiện tại của bạn: <b id="top-tier">Free</b></div>
-<div class="center">WSB — Whose Smart Brain</div>
-<div class="right">ID: <b id="top-id">1000001</b></div>
-</div>
-<div class="bar2">Thẻ của bạn còn <b id="top-days">29</b> ngày nữa sẽ về Free</div>
-</header>
+  <div class="chat-container">
+    <div id="chat-box"></div>
+    <div class="input-container">
+      <input type="text" id="msg" placeholder="Type your message...">
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
 
+  <script>
+    let token = "";
 
-<div class="shell">
-<aside class="side">
-<div class="logo">WSB</div>
-<nav>
-<button data-view="chat" class="active">Chat AI</button>
-<button data-view="code">Code</button>
-<button data-view="draw">Vẽ</button>
-<button data-view="post">Đăng</button>
-<button data-view="groups">Nhóm/Lớp</button>
-<button data-view="homework">Bài tập</button>
-<button data-view="tools">Công cụ</button>
+    async function getToken(role="free") {
+      let res = await fetch("/token", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({role})
+      });
+      let data = await res.json();
+      token = data.token;
+    }
+
+    async function sendMessage() {
+      const msg = document.getElementById("msg").value;
+      if (!msg) return;
+
+      document.getElementById("chat-box").innerHTML += `<div class='user'>${msg}</div>`;
+      document.getElementById("msg").value = "";
+
+      let res = await fetch("/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + token
+        },
+        body: JSON.stringify({message: msg})
+      });
+
+      let data = await res.json();
+      if (data.reply) {
+        document.getElementById("chat-box").innerHTML += `<div class='bot'>${data.reply}</div>`;
+      } else {
+        document.getElementById("chat-box").innerHTML += `<div class='error'>Error: ${data.error}</div>`;
+      }
+    }
+
+    // Lấy token mặc định (free)
+    getToken();
+  </script>
+</body>
+</html>
