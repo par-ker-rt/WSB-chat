@@ -1,0 +1,23 @@
+services:
+- type: web
+name: wsb-ai
+env: python
+plan: free
+region: oregon
+buildCommand: "pip install -r requirements.txt"
+startCommand: "gunicorn app:APP -w 1 -k gthread -b 0.0.0.0:10000"
+envVars:
+- key: PROVIDER
+value: openai
+- key: OPENAI_API_KEY
+sync: false
+- key: OPENAI_MODEL
+value: gpt-4o-mini
+- key: OLLAMA_URL
+value: "https://<your-tunnel-or-host>:11434"
+- key: OLLAMA_MODEL
+value: llama3
+- key: JWT_SECRET
+sync: false
+- key: ALLOW_ORIGIN
+value: "*"
