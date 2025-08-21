@@ -19,7 +19,7 @@ OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3")
 
 # Limiter
-limiter = Limiter(get_remote_address, app=APP, default_limits=[])
+limiter = Limiter(app=APP, key_func=get_remote_address, default_limits=[])
 
 # Roles & limits
 ROLE_LIMITS = {
